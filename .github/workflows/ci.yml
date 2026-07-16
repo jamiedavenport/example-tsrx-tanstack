@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm run check
+
+      # Plain `tsc` can't resolve .tsrx imports; @tsrx/typescript-plugin's
+      # tsrx-tsc wrapper passes extraSupportedExtensions to Volar's runTsc
+      # so .tsrx modules type-check too.
+      - run: pnpm exec tsrx-tsc --noEmit
+
+      # No test files exist yet, and `vitest run` currently can't even start:
+      # the Cloudflare Vite plugin rejects `resolve.external` on its `ssr`
+      # environment, which Vitest sets internally when it reuses this same
+      # vite.config.ts. Pre-existing scaffold issue, unrelated to TSRX.
+      # - run: pnpm test
+
+      - run: pnpm run build
