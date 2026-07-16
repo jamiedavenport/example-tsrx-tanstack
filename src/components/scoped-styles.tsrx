@@ -1,18 +1,16 @@
+import type { CSSProperties } from "react";
+
 type BadgeProps = {
 	color: string;
 };
 
-function Badge({ color }: BadgeProps) @{
-	<span className="badge" style={{ "--badge-color": color }}>
-		{color}
-	</span>
-}
+type BadgeStyle = CSSProperties & { "--badge-color": string };
 
-export function ScopedStylesDemo() @{
-	<div className="wrapper">
-		<Badge color="crimson" />
-		<Badge color="seagreen" />
-		<Badge color="steelblue" />
+function Badge({ color }: BadgeProps) @{
+	<>
+		<span className="badge" style={{ "--badge-color": color } as BadgeStyle}>
+			{color}
+		</span>
 
 		<style>
 			.badge {
@@ -29,5 +27,13 @@ export function ScopedStylesDemo() @{
 				padding: 1rem;
 			}
 		</style>
+	</>
+}
+
+export function ScopedStylesDemo() @{
+	<div className="wrapper">
+		<Badge color="crimson" />
+		<Badge color="seagreen" />
+		<Badge color="steelblue" />
 	</div>
 }

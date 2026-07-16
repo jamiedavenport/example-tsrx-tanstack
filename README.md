@@ -56,3 +56,11 @@ Once mounted purely client-side, the error boundary works exactly as intended (t
 Two independent things worth upstreaming to TSRX:
 - Document that `@try`/`@catch` cannot protect the SSR pass — it's a client-only recovery mechanism, same as any hand-written error boundary.
 - Consider having the compiled output wrap each `@try` block in its own `<Suspense>` boundary, so a throw during SSR only blanks that boundary's subtree instead of the entire page.
+
+### Scoped `<style>` blocks scope to their own function, not the whole file
+
+`/stress/scoped-styles` originally put the `<style>` block in `ScopedStylesDemo` while the `.badge`-classed element it styled lived in a separate `Badge` function in the same file. Result: none of the `.badge` CSS ever applied — not just the `--badge-color` custom property, the whole rule.
+
+Root cause: the scoping hash class only gets merged onto elements within the *same function* that contains the `<style>` block, not file-wide. Confirmed by inspecting the actual SSR output — elements inside `Badge` rendered as plain `class="badge"` with no hash suffix at all, while unrelated elements from a different file's component (`stress-nav.tsrx`) correctly carried *that* file's hash everywhere. After moving the `<style>` block into `Badge` itself (the function that actually renders the styled element), the hash appeared correctly (`class="badge tsrx-4fd33bbb"`), confirmed by fetching the compiled `?tsrx-css&lang.css` virtual module directly and seeing `.badge.tsrx-4fd33bbb { ... }`.
+
+This makes sense as a design (component-level scoping, not file-level) once you know it, but it's not obvious from the docs, and the failure mode is silent — no error, no warning, the CSS rule just never matches anything. `:global(...)` is the correct escape hatch for reaching a class in a *different* function in the same file (used here for `.wrapper`, which lives in `ScopedStylesDemo`).
