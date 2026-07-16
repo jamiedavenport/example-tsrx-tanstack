@@ -22,3 +22,37 @@ Root cause is in `@tanstack/start-plugin-core`, not TSRX:
 Not TSRX-specific: any plugin using the "extension lives only in the query string" virtual-module pattern (e.g. Vue SFC `<style>` blocks, `Component.vue?vue&type=style&lang.css`) would hit the same bug under TanStack Start's dev CSS collector.
 
 Proposed upstream fix: in `dev-styles.js`, check `isCssFile(dep.url) || isCssFile(dep.file)` (or just prefer `.url`) instead of `isCssFile(dep.file ?? dep.url)`.
+
+### Route file extensions
+
+`.tsrx` files can't be used as route files — only as components a route imports and renders.
+
+`@tanstack/router-generator`'s directory walker (`dist/esm/filesystem/physical/getRouteNodes.js:73`) hardcodes which extensions count as route files:
+
+```js
+else if (fullPath.match(/\.(tsx|ts|jsx|js|vue)$/)) {
+```
+
+`.tsrx` doesn't match, and there's no documented config option to extend this list (`routeFilePrefix`/`routeFileIgnorePrefix`/`routeFileIgnorePattern` filter by name, not extension; `addExtensions` only rewrites the extension in already-generated import paths). Notably `.vue` is already hardcoded in here alongside the JS/TS extensions, with dedicated handling elsewhere in `generator.js` (`isVueFile` checks) — so there's precedent for a non-`.tsx` route extension, it's just not generalized into a config option.
+
+Upstream fix would be either hardcoding `.tsrx` alongside `.vue` (narrow) or generalizing this into a `routeFileExtensions` config option (better, benefits any similar tool). Bigger change than the CSS fix since route-type/layout/lazy-route detection all key off filename patterns derived from this regex — not attempted yet.
+
+Workaround: keep route files as `.tsx`, import `.tsrx` components from them.
+
+## Stress test
+
+`/stress` has one page per TSRX language feature (`src/routes/stress/*.tsx`), each backed by a dedicated `.tsrx` component under `src/components/`: statement containers, `@if`/`@else`, `@for`/`@empty`/`key`, `@switch`/`@case`/`@default`, `@try`/`@catch`, lazy destructuring (`&{ }`), scoped styles with CSS custom properties and `:global()`, dynamic tag names, and hooks called inside `@if`/`@for` branches.
+
+### `@try`/`@catch` does not protect SSR
+
+`@tsrx/react` compiles `@try`/`@catch` to a perfectly ordinary React class component (`@tsrx/react/src/error-boundary.js`, `TsrxErrorBoundary`) using `static getDerivedStateFromError`. That's the fundamental problem: **React error boundaries never activate during server rendering** — `getDerivedStateFromError`/`componentDidCatch` are a client-render-only mechanism. This isn't a TSRX-specific bug so much as an inherited, well-known React limitation that TSRX's `@try`/`@catch` docs don't mention.
+
+Reproduced at `/stress/try-catch`, where `Bomb` throws unconditionally by default: the response is a 200, but the entire `<body>` is replaced by React 19's `<template data-msg="Switched to client rendering because the server rendering errored...">` bail-out marker — not just the `try`/`catch` subtree. Confirmed via `curl`; every other stress page renders normally (checked by grepping all responses for that marker).
+
+The blast radius is the whole page, not just the boundary, because there's no `<Suspense>` immediately wrapping the throwing subtree — the error propagates to the *outermost* Suspense boundary (around the whole route match, per the stack trace: `TryCatchDemo → Suspense → OutletImpl → ... → RouterProvider → StartServer`), so the entire document's SSR output gets discarded in favor of full client-side rendering.
+
+Once mounted purely client-side, the error boundary works exactly as intended (this is just normal React behavior, not something TSRX has to implement) — not yet visually confirmed in-browser in this session (no Chrome extension connected), but this follows directly from how React error boundaries behave outside of SSR.
+
+Two independent things worth upstreaming to TSRX:
+- Document that `@try`/`@catch` cannot protect the SSR pass — it's a client-only recovery mechanism, same as any hand-written error boundary.
+- Consider having the compiled output wrap each `@try` block in its own `<Suspense>` boundary, so a throw during SSR only blanks that boundary's subtree instead of the entire page.

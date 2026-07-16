@@ -10,33 +10,168 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StressIndexRouteImport } from './routes/stress/index'
+import { Route as StressTryCatchRouteImport } from './routes/stress/try-catch'
+import { Route as StressSwitchRouteImport } from './routes/stress/switch'
+import { Route as StressStatementContainerRouteImport } from './routes/stress/statement-container'
+import { Route as StressScopedStylesRouteImport } from './routes/stress/scoped-styles'
+import { Route as StressLazyDestructureRouteImport } from './routes/stress/lazy-destructure'
+import { Route as StressHooksInBranchRouteImport } from './routes/stress/hooks-in-branch'
+import { Route as StressForLoopRouteImport } from './routes/stress/for-loop'
+import { Route as StressDynamicTagRouteImport } from './routes/stress/dynamic-tag'
+import { Route as StressConditionalRouteImport } from './routes/stress/conditional'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StressIndexRoute = StressIndexRouteImport.update({
+  id: '/stress/',
+  path: '/stress/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StressTryCatchRoute = StressTryCatchRouteImport.update({
+  id: '/stress/try-catch',
+  path: '/stress/try-catch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StressSwitchRoute = StressSwitchRouteImport.update({
+  id: '/stress/switch',
+  path: '/stress/switch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StressStatementContainerRoute =
+  StressStatementContainerRouteImport.update({
+    id: '/stress/statement-container',
+    path: '/stress/statement-container',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const StressScopedStylesRoute = StressScopedStylesRouteImport.update({
+  id: '/stress/scoped-styles',
+  path: '/stress/scoped-styles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StressLazyDestructureRoute = StressLazyDestructureRouteImport.update({
+  id: '/stress/lazy-destructure',
+  path: '/stress/lazy-destructure',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StressHooksInBranchRoute = StressHooksInBranchRouteImport.update({
+  id: '/stress/hooks-in-branch',
+  path: '/stress/hooks-in-branch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StressForLoopRoute = StressForLoopRouteImport.update({
+  id: '/stress/for-loop',
+  path: '/stress/for-loop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StressDynamicTagRoute = StressDynamicTagRouteImport.update({
+  id: '/stress/dynamic-tag',
+  path: '/stress/dynamic-tag',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StressConditionalRoute = StressConditionalRouteImport.update({
+  id: '/stress/conditional',
+  path: '/stress/conditional',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/stress/conditional': typeof StressConditionalRoute
+  '/stress/dynamic-tag': typeof StressDynamicTagRoute
+  '/stress/for-loop': typeof StressForLoopRoute
+  '/stress/hooks-in-branch': typeof StressHooksInBranchRoute
+  '/stress/lazy-destructure': typeof StressLazyDestructureRoute
+  '/stress/scoped-styles': typeof StressScopedStylesRoute
+  '/stress/statement-container': typeof StressStatementContainerRoute
+  '/stress/switch': typeof StressSwitchRoute
+  '/stress/try-catch': typeof StressTryCatchRoute
+  '/stress/': typeof StressIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/stress/conditional': typeof StressConditionalRoute
+  '/stress/dynamic-tag': typeof StressDynamicTagRoute
+  '/stress/for-loop': typeof StressForLoopRoute
+  '/stress/hooks-in-branch': typeof StressHooksInBranchRoute
+  '/stress/lazy-destructure': typeof StressLazyDestructureRoute
+  '/stress/scoped-styles': typeof StressScopedStylesRoute
+  '/stress/statement-container': typeof StressStatementContainerRoute
+  '/stress/switch': typeof StressSwitchRoute
+  '/stress/try-catch': typeof StressTryCatchRoute
+  '/stress': typeof StressIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/stress/conditional': typeof StressConditionalRoute
+  '/stress/dynamic-tag': typeof StressDynamicTagRoute
+  '/stress/for-loop': typeof StressForLoopRoute
+  '/stress/hooks-in-branch': typeof StressHooksInBranchRoute
+  '/stress/lazy-destructure': typeof StressLazyDestructureRoute
+  '/stress/scoped-styles': typeof StressScopedStylesRoute
+  '/stress/statement-container': typeof StressStatementContainerRoute
+  '/stress/switch': typeof StressSwitchRoute
+  '/stress/try-catch': typeof StressTryCatchRoute
+  '/stress/': typeof StressIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/stress/conditional'
+    | '/stress/dynamic-tag'
+    | '/stress/for-loop'
+    | '/stress/hooks-in-branch'
+    | '/stress/lazy-destructure'
+    | '/stress/scoped-styles'
+    | '/stress/statement-container'
+    | '/stress/switch'
+    | '/stress/try-catch'
+    | '/stress/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/stress/conditional'
+    | '/stress/dynamic-tag'
+    | '/stress/for-loop'
+    | '/stress/hooks-in-branch'
+    | '/stress/lazy-destructure'
+    | '/stress/scoped-styles'
+    | '/stress/statement-container'
+    | '/stress/switch'
+    | '/stress/try-catch'
+    | '/stress'
+  id:
+    | '__root__'
+    | '/'
+    | '/stress/conditional'
+    | '/stress/dynamic-tag'
+    | '/stress/for-loop'
+    | '/stress/hooks-in-branch'
+    | '/stress/lazy-destructure'
+    | '/stress/scoped-styles'
+    | '/stress/statement-container'
+    | '/stress/switch'
+    | '/stress/try-catch'
+    | '/stress/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  StressConditionalRoute: typeof StressConditionalRoute
+  StressDynamicTagRoute: typeof StressDynamicTagRoute
+  StressForLoopRoute: typeof StressForLoopRoute
+  StressHooksInBranchRoute: typeof StressHooksInBranchRoute
+  StressLazyDestructureRoute: typeof StressLazyDestructureRoute
+  StressScopedStylesRoute: typeof StressScopedStylesRoute
+  StressStatementContainerRoute: typeof StressStatementContainerRoute
+  StressSwitchRoute: typeof StressSwitchRoute
+  StressTryCatchRoute: typeof StressTryCatchRoute
+  StressIndexRoute: typeof StressIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +183,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stress/': {
+      id: '/stress/'
+      path: '/stress'
+      fullPath: '/stress/'
+      preLoaderRoute: typeof StressIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stress/try-catch': {
+      id: '/stress/try-catch'
+      path: '/stress/try-catch'
+      fullPath: '/stress/try-catch'
+      preLoaderRoute: typeof StressTryCatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stress/switch': {
+      id: '/stress/switch'
+      path: '/stress/switch'
+      fullPath: '/stress/switch'
+      preLoaderRoute: typeof StressSwitchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stress/statement-container': {
+      id: '/stress/statement-container'
+      path: '/stress/statement-container'
+      fullPath: '/stress/statement-container'
+      preLoaderRoute: typeof StressStatementContainerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stress/scoped-styles': {
+      id: '/stress/scoped-styles'
+      path: '/stress/scoped-styles'
+      fullPath: '/stress/scoped-styles'
+      preLoaderRoute: typeof StressScopedStylesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stress/lazy-destructure': {
+      id: '/stress/lazy-destructure'
+      path: '/stress/lazy-destructure'
+      fullPath: '/stress/lazy-destructure'
+      preLoaderRoute: typeof StressLazyDestructureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stress/hooks-in-branch': {
+      id: '/stress/hooks-in-branch'
+      path: '/stress/hooks-in-branch'
+      fullPath: '/stress/hooks-in-branch'
+      preLoaderRoute: typeof StressHooksInBranchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stress/for-loop': {
+      id: '/stress/for-loop'
+      path: '/stress/for-loop'
+      fullPath: '/stress/for-loop'
+      preLoaderRoute: typeof StressForLoopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stress/dynamic-tag': {
+      id: '/stress/dynamic-tag'
+      path: '/stress/dynamic-tag'
+      fullPath: '/stress/dynamic-tag'
+      preLoaderRoute: typeof StressDynamicTagRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stress/conditional': {
+      id: '/stress/conditional'
+      path: '/stress/conditional'
+      fullPath: '/stress/conditional'
+      preLoaderRoute: typeof StressConditionalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  StressConditionalRoute: StressConditionalRoute,
+  StressDynamicTagRoute: StressDynamicTagRoute,
+  StressForLoopRoute: StressForLoopRoute,
+  StressHooksInBranchRoute: StressHooksInBranchRoute,
+  StressLazyDestructureRoute: StressLazyDestructureRoute,
+  StressScopedStylesRoute: StressScopedStylesRoute,
+  StressStatementContainerRoute: StressStatementContainerRoute,
+  StressSwitchRoute: StressSwitchRoute,
+  StressTryCatchRoute: StressTryCatchRoute,
+  StressIndexRoute: StressIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
