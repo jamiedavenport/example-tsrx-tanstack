@@ -1,4 +1,4 @@
-[![TSRX & TanStack Start](./assets/banner.png)](https://tanstack-start-app.jxd.workers.dev)
+[![TSRX & TanStack Start](./assets/banner.png)](https://www.jxd.dev/blog/tsrx-tanstack-start)
 
 An example wiring [TSRX](https://tsrx.dev) into [TanStack Start](https://tanstack.com/start) — and the SSR seams we found along the way.
 
