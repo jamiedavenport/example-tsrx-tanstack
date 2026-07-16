@@ -1,12 +1,25 @@
-[![TSRX x TanStack Start](./assets/banner.png)](https://www.jxd.dev)
+[![TSRX & TanStack Start](./assets/banner.png)](https://tanstack-start-app.jxd.workers.dev)
 
-## Log
+An example wiring [TSRX](https://tsrx.dev) into [TanStack Start](https://tanstack.com/start) — and the SSR seams we found along the way.
 
-1. Install `@tsrx/react` and `@tsrx/vite-plugin-react`. Replace in the Vite config.
-1. Install https://marketplace.visualstudio.com/items?itemName=Ripple-TS.ripple-ts-vscode-plugin for editor support.
-1. Install `@tsrx/typescript-plugin` so that Typescript understands TSRX syntax.
+Read the story behind it: [Wiring TSRX into TanStack Start, and the SSR seams we found](https://www.jxd.dev/blog/tsrx-tanstack-start)
 
-## TanStack Changes
+**Live demo:** [tanstack-start-app.jxd.workers.dev](https://tanstack-start-app.jxd.workers.dev)
+
+## Setup
+
+1. Install `@tsrx/react` and `@tsrx/vite-plugin-react`, and add the plugin to `vite.config.ts` ahead of `@vitejs/plugin-react`.
+2. Install `@tsrx/typescript-plugin` so TypeScript understands `.tsrx` syntax, and register it under `compilerOptions.plugins` in `tsconfig.json`.
+3. Add `**/*.tsrx` to `tsconfig.json`'s `include` so the language service picks the files up.
+4. Install the [Ripple TS VS Code extension](https://marketplace.visualstudio.com/items?itemName=Ripple-TS.ripple-ts-vscode-plugin) for syntax highlighting.
+
+## Stress test
+
+`/stress` has one page per TSRX language feature (`src/routes/stress/*.tsx`), each backed by a dedicated `.tsrx` component under `src/components/`: statement containers, `@if`/`@else`, `@for`/`@empty`/`key`, `@switch`/`@case`/`@default`, `@try`/`@catch`, lazy destructuring (`&{ }`), scoped styles with CSS custom properties and `:global()`, dynamic tag names, and hooks called inside `@if`/`@for` branches.
+
+## Issues found
+
+None of these are hard to work around today — see the sections below for the details and workarounds.
 
 ### SSR CSS
 
@@ -23,6 +36,8 @@ Not TSRX-specific: any plugin using the "extension lives only in the query strin
 
 Proposed upstream fix: in `dev-styles.js`, check `isCssFile(dep.url) || isCssFile(dep.file)` (or just prefer `.url`) instead of `isCssFile(dep.file ?? dep.url)`.
 
+**Workaround:** none needed for production; if you need to eyeball styling in dev, use `vite build && vite preview` instead of `vite dev`.
+
 ### Route file extensions
 
 `.tsrx` files can't be used as route files — only as components a route imports and renders.
@@ -37,11 +52,7 @@ else if (fullPath.match(/\.(tsx|ts|jsx|js|vue)$/)) {
 
 Upstream fix would be either hardcoding `.tsrx` alongside `.vue` (narrow) or generalizing this into a `routeFileExtensions` config option (better, benefits any similar tool). Bigger change than the CSS fix since route-type/layout/lazy-route detection all key off filename patterns derived from this regex — not attempted yet.
 
-Workaround: keep route files as `.tsx`, import `.tsrx` components from them.
-
-## Stress test
-
-`/stress` has one page per TSRX language feature (`src/routes/stress/*.tsx`), each backed by a dedicated `.tsrx` component under `src/components/`: statement containers, `@if`/`@else`, `@for`/`@empty`/`key`, `@switch`/`@case`/`@default`, `@try`/`@catch`, lazy destructuring (`&{ }`), scoped styles with CSS custom properties and `:global()`, dynamic tag names, and hooks called inside `@if`/`@for` branches.
+**Workaround:** keep route files as `.tsx`, import `.tsrx` components from them.
 
 ### `@try`/`@catch` does not protect SSR
 
@@ -51,11 +62,14 @@ Reproduced at `/stress/try-catch`, where `Bomb` throws unconditionally by defaul
 
 The blast radius is the whole page, not just the boundary, because there's no `<Suspense>` immediately wrapping the throwing subtree — the error propagates to the *outermost* Suspense boundary (around the whole route match, per the stack trace: `TryCatchDemo → Suspense → OutletImpl → ... → RouterProvider → StartServer`), so the entire document's SSR output gets discarded in favor of full client-side rendering.
 
-Once mounted purely client-side, the error boundary works exactly as intended (this is just normal React behavior, not something TSRX has to implement) — not yet visually confirmed in-browser in this session (no Chrome extension connected), but this follows directly from how React error boundaries behave outside of SSR.
+Once mounted purely client-side, the error boundary works exactly as intended (this is just normal React behavior, not something TSRX has to implement).
 
 Two independent things worth upstreaming to TSRX:
+
 - Document that `@try`/`@catch` cannot protect the SSR pass — it's a client-only recovery mechanism, same as any hand-written error boundary.
 - Consider having the compiled output wrap each `@try` block in its own `<Suspense>` boundary, so a throw during SSR only blanks that boundary's subtree instead of the entire page.
+
+**Workaround:** don't rely on `@try`/`@catch` alone to keep an SSR response alive; anything it wraps that can throw during render needs its own upstream handling (data fetched before render, a Suspense boundary you control, etc).
 
 ### Scoped `<style>` blocks scope to their own function, not the whole file
 
@@ -63,4 +77,10 @@ Two independent things worth upstreaming to TSRX:
 
 Root cause: the scoping hash class only gets merged onto elements within the *same function* that contains the `<style>` block, not file-wide. Confirmed by inspecting the actual SSR output — elements inside `Badge` rendered as plain `class="badge"` with no hash suffix at all, while unrelated elements from a different file's component (`stress-nav.tsrx`) correctly carried *that* file's hash everywhere. After moving the `<style>` block into `Badge` itself (the function that actually renders the styled element), the hash appeared correctly (`class="badge tsrx-4fd33bbb"`), confirmed by fetching the compiled `?tsrx-css&lang.css` virtual module directly and seeing `.badge.tsrx-4fd33bbb { ... }`.
 
-This makes sense as a design (component-level scoping, not file-level) once you know it, but it's not obvious from the docs, and the failure mode is silent — no error, no warning, the CSS rule just never matches anything. `:global(...)` is the correct escape hatch for reaching a class in a *different* function in the same file (used here for `.wrapper`, which lives in `ScopedStylesDemo`).
+This makes sense as a design (component-level scoping, not file-level) once you know it, but it's not obvious from the docs, and the failure mode is silent — no error, no warning, the CSS rule just never matches anything.
+
+**Workaround:** put the `<style>` block in the same function as the elements it styles, and use `:global(...)` as the escape hatch to reach a class in a different function in the same file.
+
+## Work with us
+
+Curious about TSRX, TanStack Start, or want help wiring something similar into your own stack? This example is built and maintained by [JXD](https://jxd.dev), a London software consultancy. We're here to help, [get in touch](https://www.jxd.dev/contact).
