@@ -10,7 +10,7 @@
 
 ### SSR CSS
 
-TSRX's scoped `<style>` blocks don't appear in the initial SSR HTML in dev; they only show up after client hydration (FOUC).
+TSRX's scoped `<style>` blocks don't appear in the initial SSR HTML in dev; they only show up after client hydration (FOUC). Confirmed dev-only — production `vite build` output renders the scoped CSS correctly via Rollup's CSS chunking, which doesn't go through the buggy dev-mode collector below.
 
 Root cause is in `@tanstack/start-plugin-core`, not TSRX:
 
@@ -22,5 +22,3 @@ Root cause is in `@tanstack/start-plugin-core`, not TSRX:
 Not TSRX-specific: any plugin using the "extension lives only in the query string" virtual-module pattern (e.g. Vue SFC `<style>` blocks, `Component.vue?vue&type=style&lang.css`) would hit the same bug under TanStack Start's dev CSS collector.
 
 Proposed upstream fix: in `dev-styles.js`, check `isCssFile(dep.url) || isCssFile(dep.file)` (or just prefer `.url`) instead of `isCssFile(dep.file ?? dep.url)`.
-
-Unverified: whether this also affects production `vite build` (likely not, since Rollup's CSS chunking doesn't use this dev-only heuristic).
