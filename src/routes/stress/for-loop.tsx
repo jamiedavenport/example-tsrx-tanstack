@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StressNav } from "#/components/stress-nav.tsrx";
 import { ForLoopDemo } from "#/components/for-loop.tsrx";
+import { StressNav } from "#/components/stress-nav.tsrx";
 
 export const Route = createFileRoute("/stress/for-loop")({ component: Page });
 

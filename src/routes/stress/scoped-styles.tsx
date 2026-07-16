@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StressNav } from "#/components/stress-nav.tsrx";
 import { ScopedStylesDemo } from "#/components/scoped-styles.tsrx";
+import { StressNav } from "#/components/stress-nav.tsrx";
 
-export const Route = createFileRoute("/stress/scoped-styles")({ component: Page });
+export const Route = createFileRoute("/stress/scoped-styles")({
+	component: Page,
+});
 
 function Page() {
 	return (

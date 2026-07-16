@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StressNav } from "#/components/stress-nav.tsrx";
 import { HooksInBranchDemo } from "#/components/hooks-in-branch.tsrx";
+import { StressNav } from "#/components/stress-nav.tsrx";
 
-export const Route = createFileRoute("/stress/hooks-in-branch")({ component: Page });
+export const Route = createFileRoute("/stress/hooks-in-branch")({
+	component: Page,
+});
 
 function Page() {
 	return (

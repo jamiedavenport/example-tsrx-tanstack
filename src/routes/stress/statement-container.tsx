@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StressNav } from "#/components/stress-nav.tsrx";
 import { StatementContainerDemo } from "#/components/statement-container.tsrx";
+import { StressNav } from "#/components/stress-nav.tsrx";
 
-export const Route = createFileRoute("/stress/statement-container")({ component: Page });
+export const Route = createFileRoute("/stress/statement-container")({
+	component: Page,
+});
 
 function Page() {
 	return (

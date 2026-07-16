@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StressNav } from "#/components/stress-nav.tsrx";
 import { DynamicTagDemo } from "#/components/dynamic-tag.tsrx";
+import { StressNav } from "#/components/stress-nav.tsrx";
 
-export const Route = createFileRoute("/stress/dynamic-tag")({ component: Page });
+export const Route = createFileRoute("/stress/dynamic-tag")({
+	component: Page,
+});
 
 function Page() {
 	return (

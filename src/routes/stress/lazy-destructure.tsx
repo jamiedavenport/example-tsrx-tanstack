@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StressNav } from "#/components/stress-nav.tsrx";
 import { LazyDestructureDemo } from "#/components/lazy-destructure.tsrx";
+import { StressNav } from "#/components/stress-nav.tsrx";
 
-export const Route = createFileRoute("/stress/lazy-destructure")({ component: Page });
+export const Route = createFileRoute("/stress/lazy-destructure")({
+	component: Page,
+});
 
 function Page() {
 	return (

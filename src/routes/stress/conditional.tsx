@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StressNav } from "#/components/stress-nav.tsrx";
 import { ConditionalDemo } from "#/components/conditional.tsrx";
+import { StressNav } from "#/components/stress-nav.tsrx";
 
-export const Route = createFileRoute("/stress/conditional")({ component: Page });
+export const Route = createFileRoute("/stress/conditional")({
+	component: Page,
+});
 
 function Page() {
 	return (

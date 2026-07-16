@@ -9,7 +9,9 @@ function StressIndex() {
 		<div className="p-8">
 			<StressNav />
 			<h1 className="text-3xl font-bold">TSRX feature stress tests</h1>
-			<p className="mt-2">One page per TSRX language feature, each backed by a `.tsrx` component.</p>
+			<p className="mt-2">
+				One page per TSRX language feature, each backed by a `.tsrx` component.
+			</p>
 			<ul className="mt-4 space-y-2">
 				{STRESS_PAGES.map((page) => (
 					<li key={page.path}>
