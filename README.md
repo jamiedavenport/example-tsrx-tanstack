@@ -2,7 +2,7 @@
 
 An example wiring [TSRX](https://tsrx.dev) into [TanStack Start](https://tanstack.com/start) — and the SSR seams we found along the way.
 
-Read the story behind it: [Wiring TSRX into TanStack Start, and the SSR seams we found](https://www.jxd.dev/blog/tsrx-tanstack-start)
+Read the story behind it: [TSRX in TanStack Start: what we like, and three bugs we filed](https://www.jxd.dev/blog/tsrx-tanstack-start)
 
 **Live demo:** [tanstack-start-app.jxd.workers.dev](https://tanstack-start-app.jxd.workers.dev)
 
